@@ -15,5 +15,3 @@ def generate(pattern, data={}):
                              if '|' in match.group(1) else "(" + match.group(1) + ")", pattern)
         if not n: break
     return re.sub(r"\{(.*?)\}", lambda(match): data[match.group(1)] if match.group(1) in data else '', pattern)
-
-print generate(u"((Такое|Сякое (такое|нетакое)!) вот такое|(Пфап|фпфпа))", {})
