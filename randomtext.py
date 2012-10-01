@@ -2,16 +2,6 @@
 import re
 from random import choice
 
-def randword(match):
-    pattern = match.group(1) if not isinstance(match, unicode) else match
-    if '(' in pattern:
-        return randword(re.sub(r"\((.*?)\)", randword, pattern))
-    elif '|' in pattern:
-        return choice(pattern.split("|"))
-    else:
-        return "(" + pattern + ")"
-
-
 def generate(pattern, data={}):
     """
     Simple random text generator.
@@ -21,6 +11,9 @@ def generate(pattern, data={}):
     Where {key} is key of element in data dict.
     """
     while True:
-        pattern, n = re.subn(r"\((.*)\)", randword, pattern)
+        pattern, n = re.subn(r"\(([^()]+)\)", lambda(match): choice(match.group(1).split("|")) 
+                             if '|' in match.group(1) else "(" + match.group(1) + ")", pattern)
         if not n: break
     return re.sub(r"\{(.*?)\}", lambda(match): data[match.group(1)] if match.group(1) in data else '', pattern)
+
+print generate(u"((Такое|Сякое (такое|нетакое)!) вот такое|(Пфап|фпфпа))", {})
