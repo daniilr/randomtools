@@ -1,8 +1,18 @@
+# -*- coding: utf-8 -*-
 import re
 from random import choice
 
+def randword(match):
+    pattern = match.group(1) if not isinstance(match, unicode) else match
+    if '(' in pattern:
+        return randword(re.sub(r"\((.*?)\)", randword, pattern))
+    elif '|' in pattern:
+        return choice(pattern.split("|"))
+    else:
+        return "(" + pattern + ")"
 
-def generate(pattern, data):
+
+def generate(pattern, data={}):
     """
     Simple random text generator.
     Text should be passed with following syntax:
@@ -10,5 +20,7 @@ def generate(pattern, data):
     Where (...|) is list of words separated by '|' sybmol.
     Where {key} is key of element in data dict.
     """
-    pattern = re.sub(r"\((.*?)\)", lambda(match): choice(match.group(1).split("|")) if '|' in match.group(1) else "(" + match.group(1) + ")", pattern)
+    while True:
+        pattern, n = re.subn(r"\((.*)\)", randword, pattern)
+        if not n: break
     return re.sub(r"\{(.*?)\}", lambda(match): data[match.group(1)] if match.group(1) in data else '', pattern)
